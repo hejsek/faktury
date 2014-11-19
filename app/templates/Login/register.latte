@@ -1,0 +1,73 @@
+<head>
+	<meta charset="utf-8">
+
+	<title>Registrační formulář</title>
+
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/screen.css">
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/bootstrap.min.css">
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/custom.css">
+	<link rel="stylesheet" media="print" href="{$basePath}/css/print.css">
+	<link rel="shortcut icon" href="{$basePath}/favicon.ico">
+</head>
+<body>
+	<div class="container">
+		<div class="row centered-form">
+			<div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Registrační formulář
+							<small>zdarma</small>
+						</h3>
+					</div>
+					<div class="panel-body">
+					{form registrationForm}
+						<div class="row">
+							<div n:foreach="$flashes as $flash" class="alert {$flash->type}">
+								<center>{$flash->message}</center>
+							</div>
+
+
+							<div class="col-xs-6 col-sm-6 col-md-6">
+								<div class="form-group">
+									{input firstName ,class=>"form-control input-sm", placeholder=>"First Name"}
+								</div>
+							</div>
+							<div class="col-xs-6 col-sm-6 col-md-6">
+								<div class="form-group">
+									{input lastName ,class=>"form-control input-sm", placeholder=>"Last Name"}
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							{input username ,class=>"form-control input-sm", placeholder=>"Email"}
+						</div>
+
+						<div class="row">
+							<div class="col-xs-6 col-sm-6 col-md-6">
+								<div class="form-group">
+									{input password ,class=>"form-control input-sm", placeholder=>"Heslo"}
+								</div>
+							</div>
+							<div class="col-xs-6 col-sm-6 col-md-6">
+								<div class="form-group">
+									{input passwordCheck ,class=>"form-control input-sm", placeholder=>"First Name"}
+								</div>
+							</div>
+						</div>
+
+						{input submit ,class=>"btn btn-info btn-block", placeholder=>"Registrovat"}
+
+					{/form}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script src="{$basePath}/js/jquery.js"></script>
+	<script src="{$basePath}/js/netteForms.js"></script>
+	<script src="{$basePath}/js/main.js"></script>
+	<script src="{$basePath}/js/bootstrap.min.js"></script>
+</body>

@@ -1,0 +1,72 @@
+{block #content}
+<div class="content">
+	{foreach $flashes as $flash}
+		<div class="flash {$flash->type}">{$flash->message}</div>
+	{/foreach}
+	<div class="button">
+		<a href="#" class="btn btn-large btn-success col-xs-6 col-sm-6 col-md-6" data-toggle="modal" data-target="#addSubjectAutomatically"
+		   >Přidat
+			subjekt automaticky</a>
+	</div>
+	<div class="button">
+		<a href="#" class="btn btn-large btn-info col-xs-6 col-sm-6 col-md-6" data-toggle="modal" data-target="#addSubjectManually"
+		   >Přidat
+			subjekt manuálně</a>
+	</div>
+	<div class="clearfix"></div>
+	<ul class="list-group">
+		<li class="list-group-item" n:foreach="$subjects as $subject"><span>{$subject->company}</span>
+			<div class="pull-right">
+
+			<a href="#"><span class="badge">42</span></a>
+			<a href="#"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+			<a n:href="deleteSubject!, $subject->id"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+			</div></li>
+	</ul>
+</div>
+
+<!-- Automatický import subjektu z ARESu -->
+<div class="modal fade" id="addSubjectAutomatically" tabindex="-1" role="dialog" aria-labelledby="addSubjectAutomaticallyLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+						class="sr-only">Close</span></button>
+				<h4 class="modal-title" id="addSubjectAutomaticallyLabel">Přidat subjekt</h4>
+			</div>
+		<div class="modal-body" style="height: 60px">
+			{form formAddSubjectAutomatically}
+				<div class="col-md-offset-3 col-xs-6 col-sm-6 col-md-6">
+					<div class="form-group">
+						{input ico ,class=>"form-control input-sm", placeholder=>"IČO"}
+					</div>
+				</div>
+
+			</div>
+			<div class="modal-footer">
+				{input submit ,class=>"btn btn-primary", value=>"Přidat subjekt"}
+				{/form}
+		</div>
+		</div>
+	</div>
+</div>
+
+<!-- Manuální tvorba subjektu-->
+<div class="modal fade" id="addSubjectManually" tabindex="-1" role="dialog" aria-labelledby="addSubjectManuallyLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+						class="sr-only">Close</span></button>
+				<h4 class="modal-title" id="addSubjectManuallyLabel">Přidat subjekt</h4>
+			</div>
+		<div class="modal-body">
+			{control formAddSubjectManually}
+			<div class="clearfix"></div>
+		</div>
+		</div>
+	</div>
+</div>
+{/block}
