@@ -99,13 +99,14 @@ class IdentityPresenter extends BasePresenter
 	 */
 	public function processFormAddSubjectManually(BootstrapForm $form)
 	{
+		$values["user"] = $this->user->identity->getId();
 		$values = $form->getValues();
-		if($this->subjectsModel->subjectExists($values->ico)) {
+		if($this->subjectsModel->subjectExists($values->ico, $values["user"])) {
 			$this->flashMessage("Subjekt s zadaným IČO je již v systému.", "alert alert-danger");
 				return;
 		}
 
-		$values["user"] = $this->user->identity->getId();
+
 
 		$this->subjectsModel->addSubject($values);
 	}
@@ -117,7 +118,8 @@ class IdentityPresenter extends BasePresenter
 	public function processFormAddSubjectAutomatically(Form $form)
 	{
 		$values = $form->getValues();
-		if($this->subjectsModel->subjectExists($values->ico)) {
+
+		if($this->subjectsModel->subjectExists($values->ico, $this->user->identity->getId())) {
 			$this->flashMessage("Subjekt s zadaným IČO je již v systému.", "alert alert-danger");
 				return;
 		}

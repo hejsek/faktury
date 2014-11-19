@@ -20,12 +20,13 @@ class SubjectsModel extends BaseModel
 			->where("user", $user);
 	}
 	
-	public function subjectExists($ico)
+	public function subjectExists($ico, $user)
 	{
 		$result = $this->getContext()
 			->table("subjects")
 			->select("*")
 			->where("ico", $ico)
+			->where("user", $user)
 			->fetch();
 
 		if($result) {
