@@ -26,7 +26,7 @@
 				<div class="container-fluid">
 					<!-- Brand and toggle get grouped for better mobile display -->
 					<div class="navbar-header">
-						<a class="navbar-brand" n:href="Identity:">Fakturovací systém  </a>
+						<a class="navbar-brand" n:href="Identity:">Fakturovací systém </a>
 					</div>
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -37,7 +37,9 @@
 							<li><a href="#">Link</a></li>
 						</ul>
 						<ul class="nav navbar-nav navbar-right">
-							<li><div class="username">Přihlášen jako {$username}</div></li>
+							<li>
+								<div class="username">Přihlášen jako {$username}</div>
+							</li>
 							<li><a n:href="logout!">Odhlásit se</a></li
 						</ul>
 					</div>
@@ -46,20 +48,27 @@
 				<!-- /.container-fluid -->
 			</nav>
 
-	{include content}
+		{include content}
 		</div>
 	{block scripts}
 		<script src="{$basePath}/js/jquery.js"></script>
 		<script src="{$basePath}/js/netteForms.js"></script>
 		<script src="{$basePath}/js/main.js"></script>
 		<script src="{$basePath}/js/bootstrap.min.js"></script>
-		<script src="{$basePath}/js/nette-ajax.js"></script>
+		<script src="{$basePath}/js/nette.ajax.js"></script>
 
 		<script>
-			$(document).on("click", ".ajax", function (event) {
-				event.preventDefault();
-				$.get(this.href);
+
+			$(document).ready(function () {
+				$.nette.init();
+				$(document).on("click", ".editSubject", function (event) {
+					event.preventDefault();
+					$.nette.ajax({ url: $(this).attr('href') },$(this), event).done(function () {
+						$('#editSubjectManually').modal('show');
+					});
+				});
 			});
+
 		</script>
 	{/block}
 	</body>

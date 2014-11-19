@@ -22,10 +22,12 @@
 			<div class="pull-right">
 
 				<a href="#"><span class="badge">42</span></a>
-				<a n:href="getSubject!, $subject->id" data-toggle="modal" data-target="#editSubjectManually"
-				   class="ajax"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
-				<a n:href="deleteSubject!, $subject->id"><span class="glyphicon glyphicon-remove"
-															   aria-hidden="true"></span></a>
+				<a n:href="getSubject!, $subject->id" class="editSubject">
+					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+				</a>
+				<a n:href="deleteSubject!, $subject->id">
+					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+				</a>
 			</div>
 		</li>
 	</ul>
