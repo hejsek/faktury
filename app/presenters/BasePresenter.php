@@ -16,7 +16,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 	public function checkRequirements($element)
 	{
-		if (!$this->user->loggedIn) {
+		if (!$this->user->loggedIn && $this->presenter->action != "activate") {
 			$this->redirect('Login:');
 		}
 	}

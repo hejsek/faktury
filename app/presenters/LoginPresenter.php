@@ -69,6 +69,10 @@ class LoginPresenter extends BasePresenter
 		$values = $form->getValues();
 
 		$user = $this->getUser();
+		if(!$this->userManager->userIsActivated($values->username)) {
+			$this->flashMessage("Musíte mít aktivovaný účet.", "alert alert-danger");
+			return;
+		}
 
 		$user->setAuthenticator($this->authenticator);
 
@@ -78,7 +82,6 @@ class LoginPresenter extends BasePresenter
 		} catch (\Nette\Security\AuthenticationException $e) {
 			$this->flashMessage("Nesprávně zadané přihlašovací údaje.", "alert alert-danger");
 		}
-		$values = $form->getValues();
 	}
 
 
@@ -118,8 +121,10 @@ class LoginPresenter extends BasePresenter
 		$values->role = "user";
 		unset($values->passwordCheck);
 		if ($this->userManager->userExist($values->username)) {
-			$this->userManager->add($values);
-			$this->flashMessage("Účet byl vytvořen.", "alert-success");
+			$http = $this->getHttpRequest();
+			$this->userManager->add($values, $http->getRemoteAddress().$http->url->scriptPath);
+			$this->flashMessage("Účet byl vytvořen na email vám byl odeslán aktivační email.", "alert alert-warning");
+			$this->redirect("default");
 		} else {
 			$this->flashMessage("Tento účet již existuje.", "alert alert-danger");
 			return;

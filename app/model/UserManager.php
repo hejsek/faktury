@@ -6,7 +6,9 @@ namespace App\Model;
 
 use Nette,
 	Nette\Utils\Strings,
-	Nette\Security\Passwords;
+	Nette\Security\Passwords,
+	Nette\Mail\Message,
+	Nette\Mail\SendmailMailer;
 
 
 /**
@@ -69,14 +71,51 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 	 * @param  string
 	 * @return void
 	 */
-	public function add($values)
+	public function add($values, $basePath)
 	{
-//		$this->database->table(self::TABLE_NAME)->insert(array(
-//			self::COLUMN_NAME => $username,
-//			self::COLUMN_PASSWORD_HASH => Passwords::hash($password),
-//		));
+		//		$this->database->table(self::TABLE_NAME)->insert(array(
+		//			self::COLUMN_NAME => $username,
+		//			self::COLUMN_PASSWORD_HASH => Passwords::hash($password),
+		//		));
 		$values->password = Passwords::hash($values->password);
+		$values->hash = Strings::random();
+		$values->confirmed = FALSE;
+
 		$this->database->query("INSERT INTO users ?", $values);
+
+		$mail = new Message;
+		$mail->setFrom('Aktivace <root@local.net>')
+			->addTo($values->username)
+			->setSubject('Potvrzení registrace')
+			->setBody($basePath."activate/" . $values->hash);
+
+
+		$mailer = new SendmailMailer;
+		$mailer->send($mail);
+	}
+
+
+
+	public function activateUser($hash)
+	{
+		$this->database->query("UPDATE users SET confirmed = 1 WHERE hash = ?", $hash);
+	}
+
+
+
+	public function userIsActivated($username)
+	{
+		$res = $this->database
+			->table("users")
+			->select("confirmed")
+			->where("username", $username)
+			->fetch()["confirmed"];
+
+		if($res == 1) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 
@@ -88,10 +127,10 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 			->where("username", $username)
 			->fetch();
 
-		if(!$result) {
-			return true;
+		if (!$result) {
+			return TRUE;
 		} else {
-			return false;
+			return FALSE;
 		}
 	}
 }

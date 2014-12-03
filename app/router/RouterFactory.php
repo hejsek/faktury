@@ -20,7 +20,11 @@ class RouterFactory
 	public function createRouter()
 	{
 		$router = new RouteList();
+
+		$router[] = new Route('activate/<hash>', 'Homepage:activate');
+
 		$router[] = new Route('<presenter>/<action>[/<id>]', 'Identity:default');
+
 		return $router;
 	}
 
