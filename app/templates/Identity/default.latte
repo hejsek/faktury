@@ -16,6 +16,15 @@
 			subjekt manuálně</a>
 	</div>
 	<div class="clearfix"></div>
+	<h3 n:if="!$subjects->fetch()">Vítejte uživateli {$username}, nemáte ještě založenou žádnou identitu. Založit si ji můžete automaticky <a
+			href="#" data-toggle="modal"
+			data-target="#addSubjectAutomatically"
+			>zde</a> či manuálně <a href="#"
+									data-toggle="modal"
+									data-target="#addSubjectManually"
+			>zde</a>.</h3>
+
+	<div class="clearfix"></div>
 	<ul class="list-group">
 		<li class="list-group-item" n:foreach="$subjects as $subject"><span>{$subject->company}</span>
 
@@ -92,7 +101,7 @@
 			</div>
 			<div class="modal-body">
 				{snippet edit}
-				{control formEditSubjectManually}
+					{control formEditSubjectManually}
 				{/snippet}
 				<div class="clearfix"></div>
 			</div>

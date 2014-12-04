@@ -87,7 +87,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 		$mail->setFrom('Aktivace <root@local.net>')
 			->addTo($values->username)
 			->setSubject('Potvrzení registrace')
-			->setBody($basePath."activate/" . $values->hash);
+			->setHtmlBody("<html><body><a target='_blank' href='http://" . $basePath . "activate/" . $values->hash . "'>Aktivace účtu</a></body>");
 
 
 		$mailer = new SendmailMailer;
@@ -111,10 +111,10 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 			->where("username", $username)
 			->fetch()["confirmed"];
 
-		if($res == 1) {
-			return true;
+		if ($res == 1) {
+			return TRUE;
 		} else {
-			return false;
+			return FALSE;
 		}
 	}
 
@@ -127,10 +127,68 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 			->where("username", $username)
 			->fetch();
 
+		//todo
 		if (!$result) {
 			return TRUE;
 		} else {
 			return FALSE;
 		}
+	}
+
+
+
+	public function test()
+	{
+		// dump($this->hashExists("root@local.net"));
+		/*$basePath = "127.0.0.1/faktury/sandbox/www/";
+		$hash = Strings::random();
+
+			$mail = new Message;
+			$mail->setFrom('Aktivace <root@local.net>')
+				->addTo("root@local.net")
+				->setSubject('Potvrzení registrace')
+				->setHtmlBody("<html><body><a target='_blank' href='http://".$basePath."activate/" . $hash."'>Aktivace účtu</a></body>");
+//				->setHtmlBody("http://seznam.cz");
+
+
+			$mailer = new SendmailMailer;
+			$mailer->send($mail);*/
+	}
+
+
+
+	public function sendNewPasswordLink($username)
+	{
+		$basePath = "127.0.0.1/faktury/sandbox/www/";
+		$hash = Strings::random();
+
+		$mail = new Message;
+		$mail->setFrom('Info <root@local.net>')
+			->addTo($username)
+			->setSubject('Změna hesla')
+			->setHtmlBody("<html><body><a target='_blank' href='http://" . $basePath . "resetPassword/" . $hash . "'>Odkaz na změnu hesla.</a></body>");
+		//				->setHtmlBody("http://seznam.cz");
+
+
+		$mailer = new SendmailMailer;
+		$mailer->send($mail);
+
+		$this->database->query('UPDATE users SET hash = ?, confirmed = 0 WHERE username = ?', $hash, $username);
+	}
+
+	public function setNewPassword($password, $hash)
+	{
+		$password = Passwords::hash($password);
+
+		$this->database->query("UPDATE users SET password = ?, confirmed = 1 WHERE hash = ?", $password, $hash);
+	}
+
+	public function getUsernameByHash($hash)
+	{
+		return $this->database
+			->table("users")
+			->select("username")
+			->where("hash", $hash)
+			->fetch()["username"];
 	}
 }

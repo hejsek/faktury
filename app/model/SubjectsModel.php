@@ -6,14 +6,24 @@
 
 namespace App\Model;
 
+
+
 class SubjectsModel extends BaseModel
 {
 
 	/**
 	 * @param $values
 	 */
-	public function addSubject($values) {
+	public function addSubject($values)
+	{
 		$this->getContext()->query("INSERT INTO subjects ?", $values);
+	}
+
+
+
+	public function editSubject($values)
+	{
+		$this->getContext()->query("UPDATE subjects SET ?", $values);
 	}
 
 
@@ -46,7 +56,7 @@ class SubjectsModel extends BaseModel
 			->where("user", $user)
 			->fetch();
 
-		if($result) {
+		if ($result) {
 			return TRUE;
 		} else {
 			return FALSE;

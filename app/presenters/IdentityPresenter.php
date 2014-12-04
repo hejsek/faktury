@@ -15,6 +15,13 @@ class IdentityPresenter extends BasePresenter
 {
 
 	/**
+	 * @var \App\Model\UserManager
+	 * @inject
+	 */
+
+	public $userManager;
+
+	/**
 	 * @var \App\Model\SubjectsModel
 	 * @inject
 	 */
@@ -27,9 +34,6 @@ class IdentityPresenter extends BasePresenter
 	{
 		$this->template->subjects = $this->subjectsModel->getAllSubjects($this->user->identity->getId());
 		$this->template->username = $this->user->identity->username;
-
-
-
 	}
 
 
@@ -40,7 +44,6 @@ class IdentityPresenter extends BasePresenter
 			$formValues = $this->subjectsModel->getSubject($id);
 			$this["formEditSubjectManually"]->setDefaults($formValues);
 			$this->redrawControl("edit");
-
 		}
 	}
 
@@ -73,44 +76,46 @@ class IdentityPresenter extends BasePresenter
 	{
 		$form = new BootstrapForm();
 
-		$form->addText("ico")
+		$form->addText("ico", "IČO")
 			->setAttribute("placeholder", "IČO")
 			->addRule(FORM::INTEGER, "Toto není validní IČO.")
 			->setRequired();
 
-		$form->addText("tin")
+		$form->addText("tin", "DIČ")
 			->setAttribute("placeholder", "DIČ")
 			->setRequired();
 
-		$form->addText("company")
+		$form->addText("company", "Společnost")
 			->setAttribute("placeholder", "Společnost")
 			->setRequired();
 
-		$form->addText("city")
+		$form->addText("city", "Město")
 			->setAttribute("placeholder", "Město");
 
-		$form->addText("street")
+		$form->addText("street", "Ulice")
 			->setAttribute("placeholder", "Ulice");
 
-		$form->addText("zip")
+		$form->addText("zip", "PSČ")
 			->setAttribute("placeholder", "Poštovní směrovací číslo");
 
-		$form->addText("country")
+		$form->addText("country", "Země")
 			->setAttribute("placeholder", "Země");
 
-		$form->addText("court")
+		$form->addText("court", "Soud")
 			->setAttribute("placeholder", "Soud")
 			->setRequired();
 
-		$form->addText("website")
+		$form->addText("website", "Webové stránky")
 			->setAttribute("placeholder", "Webové stránky")
 			->addRule(FORM::URL, "Toto není validní URL.");
 
-		$form->addText("email")
+		$form->addText("email", "Email")
 			->setAttribute("placeholder", "Emailová adresa")
 			->addRule(FORM::EMAIL, "Toto není validní emailová adresa.");
 
-		$form->addSubmit("submit");
+		$form->addCheckbox("dph", "Plátce DPH");
+
+		$form->addSubmit("submit", "Přidat subjekt");
 
 		$form->onSuccess[] = callback($this, "processFormAddSubjectManually");
 
@@ -134,6 +139,7 @@ class IdentityPresenter extends BasePresenter
 
 		$this->subjectsModel->addSubject($values);
 	}
+
 
 
 	/**
@@ -174,11 +180,15 @@ class IdentityPresenter extends BasePresenter
 
 		$form->addText("website")
 			->setAttribute("placeholder", "Webové stránky")
+			->addCondition(FORM::FILLED)
 			->addRule(FORM::URL, "Toto není validní URL.");
 
 		$form->addText("email")
 			->setAttribute("placeholder", "Emailová adresa")
+			->addCondition(FORM::FILLED)
 			->addRule(FORM::EMAIL, "Toto není validní emailová adresa.");
+
+		$form->addCheckbox("dph", "Plátce DPH");
 
 		$form->addSubmit("submit");
 
@@ -194,8 +204,9 @@ class IdentityPresenter extends BasePresenter
 	 */
 	public function processFormEditSubjectManually(BootstrapForm $form)
 	{
-		$values["user"] = $this->user->identity->getId();
 		$values = $form->getValues();
+		$values["user"] = $this->user->identity->getId();
+
 		if ($this->subjectsModel->subjectExists($values->ico, $values["user"])) {
 			$this->flashMessage("Subjekt s zadaným IČO je již v systému.", "alert alert-danger");
 			return;
@@ -203,6 +214,7 @@ class IdentityPresenter extends BasePresenter
 
 
 		$this->subjectsModel->editSubject($values);
+		$this->flashMessage("Váš subjekt byl upraven.", "alert alert-success");
 	}
 
 
@@ -235,6 +247,9 @@ class IdentityPresenter extends BasePresenter
 	public function handleDeleteSubject($id)
 	{
 		$this->subjectsModel->deleteSubject($id);
-		$this->redirect("this");
+		$this->flashMessage("Subjekt byl smazán.", "alert alert-info");
+		$this->redirect("default");
 	}
+
+
 }

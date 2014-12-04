@@ -22,6 +22,7 @@ class RouterFactory
 		$router = new RouteList();
 
 		$router[] = new Route('activate/<hash>', 'Homepage:activate');
+		$router[] = new Route('resetPassword/<hash>', 'Login:resetPassword');
 
 		$router[] = new Route('<presenter>/<action>[/<id>]', 'Identity:default');
 

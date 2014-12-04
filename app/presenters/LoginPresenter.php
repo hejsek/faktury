@@ -25,8 +25,13 @@ class LoginPresenter extends BasePresenter
 	/**
 	 * @var Model\UserManager
 	 * @inject
- 	 */
+	 */
 	public $authenticator;
+
+	private $username;
+
+	private $hash;
+
 
 
 	public function checkRequirements($element)
@@ -37,9 +42,17 @@ class LoginPresenter extends BasePresenter
 
 	public function renderDefault()
 	{
-		if($this->user->isLoggedIn()) {
+		if ($this->user->isLoggedIn()) {
 			$this->redirect("Identity:");
 		}
+	}
+
+
+
+	public function renderResetPassword($username)
+	{
+		$this->username = $username;
+		$this->hash = $this->getParameter("hash");
 	}
 
 
@@ -69,7 +82,7 @@ class LoginPresenter extends BasePresenter
 		$values = $form->getValues();
 
 		$user = $this->getUser();
-		if(!$this->userManager->userIsActivated($values->username)) {
+		if (!$this->userManager->userIsActivated($values->username)) {
 			$this->flashMessage("Musíte mít aktivovaný účet.", "alert alert-danger");
 			return;
 		}
@@ -122,12 +135,80 @@ class LoginPresenter extends BasePresenter
 		unset($values->passwordCheck);
 		if ($this->userManager->userExist($values->username)) {
 			$http = $this->getHttpRequest();
-			$this->userManager->add($values, $http->getRemoteAddress().$http->url->scriptPath);
+
+			$this->userManager->add($values, $http->getRemoteAddress() . $http->url->scriptPath);
 			$this->flashMessage("Účet byl vytvořen na email vám byl odeslán aktivační email.", "alert alert-warning");
 			$this->redirect("default");
 		} else {
 			$this->flashMessage("Tento účet již existuje.", "alert alert-danger");
 			return;
 		}
+	}
+
+
+
+	public function createComponentFormResetPassword()
+	{
+		$form = new \App\Model\BootstrapForm();
+
+
+		$form->addText("username")
+			->addRule(FORM::EMAIL, "Email nemá správný formát.");
+
+		$form->addSubmit("submit", "Odeslat email");
+
+		$form->onSuccess[] = callback($this, "processResetPasswordForm");
+
+		return $form;
+	}
+
+
+
+	public function processResetPasswordForm(Form $form)
+	{
+		$values = $form->getValues();
+
+		if (!$this->userManager->userExist($values->username)) {
+			$this->userManager->sendNewPasswordLink($values->username);
+			$this->flashMessage("Na zadaný email vám byl odeslán odkaz na reset hesla", "alert alert-info");
+		} else {
+			$this->flashMessage("Uživatel nebyl nalezen.", "alert alert-danger");
+		}
+	}
+
+
+
+	public function createComponentFormSetNewPassword()
+	{
+		$form = new Form();
+
+
+		$form->addPassword("password")
+			->setRequired();
+
+		$form->addPassword("passwordCheck")
+			->addRule(Form::EQUAL, "Hesla se neshodují.", $form["password"]);
+
+		$form->addHidden("hash")
+			->setValue($this->getParameter("hash"));
+
+		$form->addSubmit("submit", "Změnit heslo");
+
+		$form->onSuccess[] = callback($this, "processSetNewPasswordForm");
+
+		return $form;
+	}
+
+
+
+	public function processSetNewPasswordForm(Form $form)
+	{
+		$values = $form->getValues();
+
+		$this->userManager->setNewPassword($values->password, $values->hash);
+		//přidat metodu co sem dá username podle hashe
+		$this->user->login($this->userManager->getUsernameByHash($values->hash), $values->password);
+		$this->flashMessage("Vaše heslo bylo úspěšně změněno", "alert alert-success");
+		$this->redirect("Identity:");
 	}
 }
